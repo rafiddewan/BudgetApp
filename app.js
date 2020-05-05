@@ -6,6 +6,29 @@
  //Model Module
  var budgetModel = (function() {
     
+   var Expense = function(id, description, value){
+       this.id = id;
+       this.description = description;
+       this.value = value;
+    };
+
+    var income = function(id, description, value){
+        this.id = id;
+        this.description = description;
+        this.value = value;
+    };
+    
+    var budgetData = {
+        allItems:{
+            exp:[],
+            inc:[]
+        },
+        totals: {
+            exp: 0,
+            inc: 0
+        }
+    };
+
  })();
 
  //UI Module
