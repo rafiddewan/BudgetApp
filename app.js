@@ -3,6 +3,17 @@
  * Module pattern will create modules for us
  */
 
+ /***************
+  * Event bubbling happens when an event on the button then all the parent elements one at a time
+  * Event that caused the bubbling to happend is the target element
+  * Event delegation happens when theres an event handler attached to a parent element
+  * and wait for the event to bubble up, and then do whatever we intended to do with
+  * our target element
+  * Event delegation is to NOT set up the event handler on the target element we are interested but to attach it to a parent element and catch the event there
+  * Can catch the event we are interested in with the target element propery
+  * We use event delegation when we have an element with lots of child elements we are interested in
+  * We use event delegation we want to have an event handler attached to an elment that is not yet in te DOM when our page is loaded
+  */
  //Model Module
  var budgetModel = (function() {
     
@@ -65,6 +76,20 @@
             console.log(budgetData);
         },
 
+        deleteItem: function(type, id){
+            var index;
+            ids = budgetData.allItems[type].map(function(item){
+                return item.id;
+            });
+            
+            index = ids.indexOf(id); //finds the id of the index
+
+            if(index !== -1){
+                //Splice method to remove elements
+                budgetData.allItems[type].splice(index, 1);
+            }
+        },
+
         calculateBudget: function(){
 
             //calculate total income and expenses
@@ -77,7 +102,7 @@
             //calculate the perecentage of income that we spend
             if(budgetData.totals.inc > 0){
                 budgetData.percentage = Math.round((budgetData.totals.exp /budgetData.totals.inc) * 100);
-            } else budget.percentage = -1; //no income
+            } else budgetData.percentage = -1; //no income
 
             //Expense = 100 and income 200, spent 50% = 100/200 = 0.5 * 100
 
@@ -110,7 +135,8 @@ var budgetView = (function(){
         budgetLabel: '.budget__value',
         incomeLabel: '.budget__income--value',
         expensesLabel: '.budget__expenses--value',
-        percentageLabel: '.budget__expenses--percentage'
+        percentageLabel: '.budget__expenses--percentage',
+        container: '.container'
     };
     return {
         getInput: function(){
@@ -146,6 +172,10 @@ var budgetView = (function(){
             //Insert HTML into the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHTML);
            
+        },
+        
+        deleteListItem: function(selectorID) {
+            document.getElementById(selectorID).parentNode.removeChild(document.getElementById(selectorID));
         },
 
         clearFields: function() {
@@ -191,6 +221,8 @@ var budgetController = (function(model, view){
                 ctrlAddItem();
             }
         });
+
+        document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     };
 
     var updateBudget = function() {
@@ -210,7 +242,7 @@ var budgetController = (function(model, view){
         if(input.description !== "" && !isNaN(input.amount) && input.amount > 0){ //can't enter empty value or description, as well as a value of 0
             //Add the item to the model
             var newItem = model.addItem(input.type, input.description, input.amount);
-
+            console.log
             //Add item to the UI
             view.addListItem(newItem, input.type);
 
@@ -222,6 +254,27 @@ var budgetController = (function(model, view){
 
         }
 
+    };
+
+
+    ctrlDeleteItem = function(event) { //event used for identifying the target element
+        var itemID, splitID, type, ID;
+        itemID = event.target.parentNode.parentNode.parentNode.parentNode.id;
+
+        if(itemID){
+            //inc-1
+            splitID = itemID.split('-');
+            if(splitID[0] === 'income') type = 'inc';
+            else if(splitID[0] === 'expense') type ='exp';
+            ID = parseInt(splitID[1]);
+
+            //Delete the item from the data structure
+            model.deleteItem(type, ID);
+            //Delete the item from the UI
+            view.deleteListItem(itemID);
+            // Update and show the new budget
+            updateBudget();
+        }
     };
 
     return{

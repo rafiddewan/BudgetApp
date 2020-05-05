@@ -9,6 +9,9 @@ This web app helps me plan my budget
 - Type the value (amount) of that item
 - Press "Enter" or click the checkmark sign
 
+### How to remove an item
+- Simply hover over the price and you can click the "X" to delete an item
+
 ## Fundamental Things for this architecture
 - Click on the button will start the event
     - Add the event handler
@@ -17,6 +20,13 @@ This web app helps me plan my budget
 - Add the new item to the UI
 - Calculate the budget
 - Update the UI of the budget
+
+## Other things to do
+- Click on the remove button to remove the item from the list
+    - Add event handler
+    - Delete the item to the UI
+- Re-calculate budget
+- Update UI
 
 ## Modules
 - Model
