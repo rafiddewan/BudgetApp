@@ -37,7 +37,17 @@ var budgetView = (function(){
 //Controller Module
 var budgetController = (function(model, view){
     
-    var DOM = view.getDOMstrings();
+    var initializeEventListeners =  function(){
+        var DOM = view.getDOMstrings();
+
+        document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
+
+        document.addEventListener('keypress', function(event){
+            if(event.keyCode === 13 || event.which === 13){
+                ctrlAddItem();
+            }
+        });
+    };
 
     var ctrlAddItem = function() {
         //Get Field Input Data
@@ -50,12 +60,14 @@ var budgetController = (function(model, view){
         //Calculate the budget
 
         //Update the UI
-    }
-    document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
+    };
 
-    document.addEventListener('keypress', function(event){
-        if(event.keyCode === 13 || event.which === 13){
-            ctrlAddItem();
+    return{
+        init: function(){
+            initializeEventListeners();
         }
-    });
+    }
+    
 })(budgetModel, budgetView);
+
+budgetController.init();
