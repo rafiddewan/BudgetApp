@@ -103,6 +103,17 @@ var budgetView = (function(){
             //Insert HTML into the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHTML);
            
+        },
+
+        clearFields: function() {
+            var fields;
+            fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputAmount);
+            var fieldsArr = Array.prototype.slice.call(fields);
+            fieldsArr.forEach(field => {
+                field.value = "";
+            });
+
+            fieldsArr[0].focus();
         }
     };
 })();
@@ -134,6 +145,9 @@ var budgetController = (function(model, view){
 
         //Add item to the UI
         view.addListItem(newItem, input.type);
+
+        //Clear the fields
+        view.clearFields();
 
         //Calculate the budget
 
