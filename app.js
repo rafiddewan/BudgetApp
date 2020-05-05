@@ -65,7 +65,10 @@ var budgetView = (function(){
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputAmount: '.add__value',
-        inputButton: '.add__btn'
+        inputButton: '.add__btn',
+        incomeContainer: '.income__list',
+        expensesContainer: '.expenses__list',
+        inputRemoveButton: 'item__delete--btn'
     };
     return {
         getInput: function(){
@@ -78,6 +81,28 @@ var budgetView = (function(){
 
         getDOMstrings: function(){
             return DOMstrings;
+        },
+
+        addListItem: function(obj, type){
+            //create HTML string with placeholder text
+            var html, newHTML, element;
+            if(type === 'inc'){
+                element = DOMstrings.incomeContainer;
+                html = '<div class="item clearfix" id="income-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"> <div class="item__value">%value%</div> <div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
+            }
+            else if(type === 'exp'){
+                element = DOMstrings.expensesContainer;
+                html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
+            }
+            
+            //replace the placeholder text with some data
+            newHTML = html.replace('%id%', obj.id);
+            newHTML = newHTML.replace('%description%', obj.description);
+            newHTML = newHTML.replace('%value%', obj.value);
+
+            //Insert HTML into the DOM
+            document.querySelector(element).insertAdjacentHTML('beforeend', newHTML);
+           
         }
     };
 })();
@@ -108,6 +133,7 @@ var budgetController = (function(model, view){
         var newItem = model.addItem(input.type, input.description, input.amount);
 
         //Add item to the UI
+        view.addListItem(newItem, input.type);
 
         //Calculate the budget
 
