@@ -12,12 +12,12 @@
        this.value = value;
     };
 
-    var income = function(id, description, value){
+    var Income = function(id, description, value){
         this.id = id;
         this.description = description;
         this.value = value;
     };
-    
+
     var budgetData = {
         allItems:{
             exp:[],
@@ -28,6 +28,32 @@
             inc: 0
         }
     };
+
+    return{
+        addItem: function(type, description, amount){
+            var newItem;
+
+            //create new ID
+            if(budgetData.allItems[type].length > 0){            
+                ID = budgetData.allItems[type][budgetData.allItems[type].length -1].ID + 1;
+            } else ID = 0;
+            //Create new item based on 'inc' or 'exp' type
+            if(type === 'exp'){
+                newItem = new Expense(ID, description, amount);
+            } else if(type === 'inc'){
+                newItem = new Income(ID, description, amount);
+            }
+
+            //push it into our budgetData structure
+            budgetData.allItems[type].push(newItem);
+
+            //return the new element
+            return newItem;
+        },
+        testing: function(){
+            console.log(budgetData);
+        }
+    }
 
  })();
 
@@ -73,10 +99,13 @@ var budgetController = (function(model, view){
     };
 
     var ctrlAddItem = function() {
-        //Get Field Input Data
+
+        //Get Field Input budgetData
         var input = view.getInput();
         console.log(input);
-        //Add the item to the budget controller
+
+        //Add the item to the model
+        var newItem = model.addItem(input.type, input.description, input.amount);
 
         //Add item to the UI
 
