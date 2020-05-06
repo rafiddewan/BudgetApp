@@ -26,6 +26,10 @@ This web app helps me plan my budget
     - Add event handler
     - Delete the item to the UI
 - Re-calculate budget
+- Calculate percentages in UI
+- Display the current month and year
+- Number formatting
+- Improve input field UX
 - Update UI
 
 ## Modules

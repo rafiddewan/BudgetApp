@@ -21,7 +21,16 @@
        this.id = id;
        this.description = description;
        this.value = value;
+       this.percentage = -1;
     };
+
+    Expense.prototype.calculatePercentage = function(totalIncome) {
+        if(totalIncome > 0) this.percentage = Math.round((this.value / totalIncome) * 100);
+        else this.percentage = -1;
+    }
+    Expense.prototype.getPercentage = function(){
+        return this.percentage;
+    }
 
     var Income = function(id, description, value){
         this.id = id;
@@ -30,7 +39,6 @@
     };
 
     var calculate = function calculateTotal(type){
-
         var sum = 0;
         budgetData.allItems[type].forEach(item => {
             sum += item.value;
@@ -106,6 +114,19 @@
 
             //Expense = 100 and income 200, spent 50% = 100/200 = 0.5 * 100
 
+        },
+
+        calculatePercentages: function() {
+            budgetData.allItems.exp.forEach(element => {
+                element.calculatePercentage(budgetData.totals.inc);                
+            });  
+        },
+
+        getPercentages: function(){
+            var allPercentages = budgetData.allItems.exp.map(function(item) {
+                return item.getPercentage();
+            });
+            return allPercentages;
         },
 
         getBudget: function() {
@@ -234,6 +255,16 @@ var budgetController = (function(model, view){
         view.displayBudget(budget);
     };
 
+    var updatePercentages = function() {
+        // Calculate percentages
+        model.calculatePercentages();
+
+        //Read percentages from budget controller
+        var percentages = model.getPercentages();
+        // Update the UI with the new percentages
+        console.log(percentages);
+    }
+
     var ctrlAddItem = function() {
 
         //Get Field Input budgetData
@@ -249,9 +280,9 @@ var budgetController = (function(model, view){
             //Clear the fields
             view.clearFields();
 
-            //Calculate and Update the budget
+            //Calculate and Update the budget and percentages
             updateBudget();
-
+            updatePercentages();
         }
 
     };
@@ -272,8 +303,9 @@ var budgetController = (function(model, view){
             model.deleteItem(type, ID);
             //Delete the item from the UI
             view.deleteListItem(itemID);
-            // Update and show the new budget
+            // Update and show the new budget and percentages
             updateBudget();
+            updatePercentages();
         }
     };
 
