@@ -31,6 +31,9 @@ This web app helps me plan my budget
 - Number formatting
 - Improve input field UX
 - Update UI
+- All numbers have a decimal part with exactly two decimal point
+- All the expenses have a - sign and income have a + sign
+- If a number is in the thousands, there's a comma
 
 ## Modules
 - Model

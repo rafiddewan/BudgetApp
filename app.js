@@ -75,7 +75,7 @@
                 newItem = new Income(ID, description, amount);
             }
 
-            //push it into our budgetData structure
+            //push it into our budgetData intucture
             budgetData.allItems[type].push(newItem);
             //return the new element
             return newItem;
@@ -145,7 +145,7 @@
 var budgetView = (function(){
 
     //stores query selectors, so we have a central place if we want to change the class
-    var DOMstrings = {
+    var DOMStrings = {
         inputType: '.add__type',
         inputDescription: '.add__description',
         inputAmount: '.add__value',
@@ -160,28 +160,51 @@ var budgetView = (function(){
         container: '.container',
         expensesPercentageLabel: '.item__percentage'
     };
+    var formatNumber = function(num, type){
+        var numSplit, int , dec, placeholder;
+        num = Math.abs(num); //remove any negatives numbers by default
+        
+        num = num.toFixed(2); //always put exactly two decimal numbers
+
+        numSplit = num.split('.'); //split it between integer and decmial portion
+
+        int = numSplit[0]; //integer portion
+
+        placeholder = int.length; //placeholder of where to do the substring from
+
+        //loop through hundreds
+        for(var i = int.length-1; i >= 0; i--){
+            if(i % 4 === 0){
+                if((placeholder % 3 == 0 || placeholder < 3) && i == 0) break;
+                int = int.substr(0, placeholder - 3) + ',' + int.substr(placeholder-3, int.length-1);
+                placeholder -= 3;
+            }
+        }  
+        dec = '.' + numSplit[1];//decimal
+        return (type === 'exp'? '-' : '+') + ' ' + int + dec; //return the string
+    }
     return {
         getInput: function(){
             return{
-                type: document.querySelector(DOMstrings.inputType).value, //will be inc or exp
-                description: document.querySelector(DOMstrings.inputDescription).value,
-                amount: parseFloat(document.querySelector(DOMstrings.inputAmount).value)
+                type: document.querySelector(DOMStrings.inputType).value, //will be inc or exp
+                description: document.querySelector(DOMStrings.inputDescription).value,
+                amount: parseFloat(document.querySelector(DOMStrings.inputAmount).value)
             };
         },
 
-        getDOMstrings: function(){
-            return DOMstrings;
+        getDOMStrings: function(){
+            return DOMStrings;
         },
 
         addListItem: function(obj, type){
-            //create HTML string with placeholder text
+            //create HTML inting with placeholder text
             var html, newHTML, element;
             if(type === 'inc'){
-                element = DOMstrings.incomeContainer;
+                element = DOMStrings.incomeContainer;
                 html = '<div class="item clearfix" id="income-%id%"> <div class="item__description">%description%</div> <div class="right clearfix"> <div class="item__value">%value%</div> <div class="item__delete"> <button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>';
             }
             else if(type === 'exp'){
-                element = DOMstrings.expensesContainer;
+                element = DOMStrings.expensesContainer;
                 html = '<div class="item clearfix" id="expense-%id%"><div class="item__description">%description%</div><div class="right clearfix"><div class="item__value">%value%</div><div class="item__percentage">21%</div><div class="item__delete"><button class="item__delete--btn"><i class="ion-ios-close-outline"></i></button></div></div></div>'
             }
             
@@ -189,7 +212,7 @@ var budgetView = (function(){
     
             newHTML = html.replace('%id%', obj.id);
             newHTML = newHTML.replace('%description%', obj.description);
-            newHTML = newHTML.replace('%value%', obj.value);
+            newHTML = newHTML.replace('%value%', formatNumber(obj.value, type));
 
             //Insert HTML into the DOM
             document.querySelector(element).insertAdjacentHTML('beforeend', newHTML);
@@ -202,7 +225,7 @@ var budgetView = (function(){
 
         clearFields: function() {
             var fields;
-            fields = document.querySelectorAll(DOMstrings.inputDescription + ', ' + DOMstrings.inputAmount);
+            fields = document.querySelectorAll(DOMStrings.inputDescription + ', ' + DOMStrings.inputAmount);
             var fieldsArr = Array.prototype.slice.call(fields);
             fieldsArr.forEach(field => {
                 field.value = "";
@@ -212,22 +235,22 @@ var budgetView = (function(){
         },
 
         displayBudget: function(obj){
-            document.querySelector(DOMstrings.budgetLabel).textContent = obj.budget;
-            document.querySelector(DOMstrings.incomeLabel).textContent = obj.totalInc;
-            document.querySelector(DOMstrings.expensesLabel).textContent = obj.totalExp;
+            document.querySelector(DOMStrings.budgetLabel).textContent = obj.budget;
+            document.querySelector(DOMStrings.incomeLabel).textContent = obj.totalInc;
+            document.querySelector(DOMStrings.expensesLabel).textContent = obj.totalExp;
             if(obj.percentage > 100){
-                document.querySelector(DOMstrings.percentageLabel).textContent = "broke";
+                document.querySelector(DOMStrings.percentageLabel).textContent = "broke";
             }
             else if(obj.percentage > 0){
-                document.querySelector(DOMstrings.percentageLabel).textContent = obj.percentage + "%";
+                document.querySelector(DOMStrings.percentageLabel).textContent = obj.percentage + "%";
             } 
             else{
-                document.querySelector(DOMstrings.percentageLabel).textContent = "---";
+                document.querySelector(DOMStrings.percentageLabel).textContent = "---";
             }
         },
         
         displayPercentages: function(percentages){
-            fields = document.querySelectorAll(DOMstrings.expensesPercentageLabel); //returns a node list
+            fields = document.querySelectorAll(DOMStrings.expensesPercentageLabel); //returns a node list
             
             var nodeListForEach = function(list, callback){ //passes fields and anonymous function
                 for(var i = 0; i < list.length; i++){
@@ -240,7 +263,7 @@ var budgetView = (function(){
                 else current.textContent = "---";
             });
 
-        }
+        },
     };
 })();
 
@@ -249,7 +272,7 @@ var budgetView = (function(){
 var budgetController = (function(model, view){
     
     var initializeEventListeners =  function(){
-        var DOM = view.getDOMstrings();
+        var DOM = view.getDOMStrings();
 
         document.querySelector(DOM.inputButton).addEventListener('click', ctrlAddItem);
 
@@ -277,6 +300,7 @@ var budgetController = (function(model, view){
 
         //Read percentages from budget controller
         var percentages = model.getPercentages();
+
         // Update the UI with the new percentages
         view.displayPercentages(percentages);
     }
@@ -315,7 +339,7 @@ var budgetController = (function(model, view){
             else if(splitID[0] === 'expense') type ='exp';
             ID = parseInt(splitID[1]);
 
-            //Delete the item from the data structure
+            //Delete the item from the data intucture
             model.deleteItem(type, ID);
             //Delete the item from the UI
             view.deleteListItem(itemID);
