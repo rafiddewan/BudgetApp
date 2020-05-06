@@ -184,6 +184,11 @@ var budgetView = (function(){
         dec = '.' + numSplit[1];//decimal
         return (type === 'exp'? '-' : '+') + ' ' + int + dec; //return the string
     }
+    var nodeListForEach = function(list, callback){ //passes fields and anonymous function
+        for(var i = 0; i < list.length; i++){
+            callback(list[i], i); //calls the callback function
+        }
+    };
     return {
         getInput: function(){
             return{
@@ -252,12 +257,6 @@ var budgetView = (function(){
         
         displayPercentages: function(percentages){
             fields = document.querySelectorAll(DOMStrings.expensesPercentageLabel); //returns a node list
-            
-            var nodeListForEach = function(list, callback){ //passes fields and anonymous function
-                for(var i = 0; i < list.length; i++){
-                    callback(list[i], i); //calls the callback function
-                }
-            };
 
             nodeListForEach(fields, function(current, index) { //calls function
                 if(percentages[index] > 0) current.textContent = percentages[index] + '%';
@@ -287,6 +286,14 @@ var budgetView = (function(){
             month = months[now.getMonth()];
 
             document.querySelector(DOMStrings.dateLabel).textContent = month + ', ' + year;
+        },
+
+        changeColour: function() {
+            var fields = document.querySelectorAll(DOMStrings.inputType + ',' + DOMStrings.inputDescription + ',' + DOMStrings.inputAmount);
+            nodeListForEach(fields, function(cur){
+                cur.classList.toggle('red-focus');
+            })
+
         }
     };
 })();
@@ -305,6 +312,8 @@ var budgetController = (function(model, view){
                 ctrlAddItem();
             }
         });
+
+        document.querySelector(DOM.inputType).addEventListener('change', view.changeColour);
         document.querySelector(DOM.container).addEventListener('click', ctrlDeleteItem);
     };
 
